@@ -1,181 +1,152 @@
 """
 database.py — SQLite persistence layer for AI Pulse
+
+Articles are keyed by link. The dashboard reads and writes through these
+functions so review decisions survive a browser refresh.
 """
 import sqlite3
-from datetime import datetime
-from config import DB_PATH
+from contextlib import contextmanager
+from typing import Optional
+
+import config
+
+ARTICLE_FIELDS = [
+    "title", "link", "summary", "source", "published",
+    "ai_headline", "ai_summary", "why_it_matters", "quick_challenge", "category",
+    "relevance_score", "relevance_reason", "reading_time", "duplicate_of",
+    "status", "ai_engine",
+]
 
 
-def get_db() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row  # rows behave like dicts
+def get_db(db_path: Optional[str] = None) -> sqlite3.Connection:
+    conn = sqlite3.connect(db_path or config.DB_PATH)
+    conn.row_factory = sqlite3.Row
     return conn
 
 
-def init_db() -> None:
+@contextmanager
+def _connect(db_path: Optional[str] = None):
+    """Open a connection, commit on success, always close."""
+    conn = get_db(db_path)
+    try:
+        with conn:
+            yield conn
+    finally:
+        conn.close()
+
+
+def init_db(db_path: Optional[str] = None) -> None:
     """Create tables if they don't exist."""
-    conn = get_db()
-    conn.executescript("""
-        CREATE TABLE IF NOT EXISTS articles (
-            id            INTEGER PRIMARY KEY AUTOINCREMENT,
-            title         TEXT NOT NULL,
-            link          TEXT UNIQUE NOT NULL,
-            raw_summary   TEXT,
-            source        TEXT,
-            published     TEXT,
-            fetched_at    TEXT DEFAULT CURRENT_TIMESTAMP,
+    with _connect(db_path) as conn:
+        conn.executescript("""
+            CREATE TABLE IF NOT EXISTS articles (
+                id               INTEGER PRIMARY KEY AUTOINCREMENT,
+                title            TEXT NOT NULL,
+                link             TEXT UNIQUE NOT NULL,
+                summary          TEXT,
+                source           TEXT,
+                published        TEXT,
+                fetched_at       TEXT DEFAULT CURRENT_TIMESTAMP,
 
-            -- AI-generated fields
-            ai_headline      TEXT,
-            ai_summary       TEXT,
-            why_it_matters   TEXT,
-            quick_challenge  TEXT,
-            category         TEXT,
-            relevance_score  REAL DEFAULT 0,
-            reading_time     INTEGER DEFAULT 1,
+                -- AI-generated fields
+                ai_headline      TEXT,
+                ai_summary       TEXT,
+                why_it_matters   TEXT,
+                quick_challenge  TEXT,
+                category         TEXT,
+                relevance_score  INTEGER DEFAULT 0,
+                relevance_reason TEXT,
+                reading_time     INTEGER DEFAULT 1,
+                duplicate_of     TEXT,
+                ai_engine        TEXT,
 
-            -- Coordinator decision
-            included      INTEGER DEFAULT 1
-        );
+                -- pending | approved | rejected | filtered | duplicate
+                status           TEXT DEFAULT 'pending'
+            );
 
-        CREATE TABLE IF NOT EXISTS newsletters (
-            id           INTEGER PRIMARY KEY AUTOINCREMENT,
-            title        TEXT,
-            editor_note  TEXT,
-            html_content TEXT,
-            md_content   TEXT,
-            format       TEXT DEFAULT 'weekly',
-            created_at   TEXT DEFAULT CURRENT_TIMESTAMP
-        );
-    """)
-    conn.commit()
-    conn.close()
+            CREATE TABLE IF NOT EXISTS newsletters (
+                id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                title        TEXT,
+                editor_note  TEXT,
+                html_content TEXT,
+                md_content   TEXT,
+                format       TEXT DEFAULT 'weekly',
+                created_at   TEXT DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
 
 
 # ─── Articles ─────────────────────────────────────────────────────────────────
 
-def insert_articles(articles: list[dict]) -> int:
-    """Bulk-insert raw harvested articles; skip duplicates. Returns count inserted."""
-    conn = get_db()
-    inserted = 0
-    for a in articles:
-        try:
-            conn.execute(
-                """INSERT INTO articles (title, link, raw_summary, source, published)
-                   VALUES (?, ?, ?, ?, ?)""",
-                (a["title"], a["link"], a.get("summary", ""), a["source"], a.get("published", ""))
-            )
-            inserted += 1
-        except sqlite3.IntegrityError:
-            pass  # duplicate link — skip
-    conn.commit()
-    conn.close()
-    return inserted
+def replace_articles(articles: list[dict], db_path: Optional[str] = None) -> None:
+    """Replace the current batch with freshly processed articles."""
+    cols = ", ".join(ARTICLE_FIELDS)
+    marks = ", ".join("?" for _ in ARTICLE_FIELDS)
+    with _connect(db_path) as conn:
+        conn.execute("DELETE FROM articles")
+        conn.executemany(
+            f"INSERT OR IGNORE INTO articles ({cols}) VALUES ({marks})",
+            [tuple(a.get(f) for f in ARTICLE_FIELDS) for a in articles],
+        )
 
 
-def get_unprocessed_articles() -> list[dict]:
-    """Return articles that have NOT yet been scored by the AI pipeline."""
-    conn = get_db()
-    rows = conn.execute(
-        "SELECT * FROM articles WHERE ai_summary IS NULL ORDER BY fetched_at DESC"
-    ).fetchall()
-    conn.close()
+def get_all_articles(db_path: Optional[str] = None) -> list[dict]:
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT * FROM articles ORDER BY relevance_score DESC, id ASC"
+        ).fetchall()
     return [dict(r) for r in rows]
 
 
-def get_all_articles(limit: int = 100) -> list[dict]:
-    conn = get_db()
-    rows = conn.execute(
-        "SELECT * FROM articles ORDER BY relevance_score DESC, fetched_at DESC LIMIT ?",
-        (limit,)
-    ).fetchall()
-    conn.close()
+def get_approved_articles(db_path: Optional[str] = None) -> list[dict]:
+    """Articles the coordinator approved. Rescued low scorers are included on purpose."""
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            """SELECT * FROM articles
+               WHERE status = 'approved' AND ai_summary IS NOT NULL
+               ORDER BY relevance_score DESC""",
+        ).fetchall()
     return [dict(r) for r in rows]
 
 
-def get_approved_articles() -> list[dict]:
-    """Return articles the coordinator has approved (included=1, scored, AI processed)."""
-    conn = get_db()
-    rows = conn.execute(
-        """SELECT * FROM articles
-           WHERE included = 1
-             AND relevance_score >= 6
-             AND ai_summary IS NOT NULL
-           ORDER BY relevance_score DESC""",
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def update_ai_fields(article_id: int, fields: dict) -> None:
-    """Patch AI-generated fields onto an article row."""
-    conn = get_db()
+def update_article(link: str, fields: dict, db_path: Optional[str] = None) -> None:
+    """Patch any of ARTICLE_FIELDS on the article with this link."""
+    fields = {k: v for k, v in fields.items() if k in ARTICLE_FIELDS and k != "link"}
+    if not fields:
+        return
     keys = ", ".join(f"{k}=?" for k in fields)
-    vals = list(fields.values()) + [article_id]
-    conn.execute(f"UPDATE articles SET {keys} WHERE id=?", vals)
-    conn.commit()
-    conn.close()
+    with _connect(db_path) as conn:
+        conn.execute(f"UPDATE articles SET {keys} WHERE link=?", [*fields.values(), link])
 
 
-def set_included(article_id: int, included: bool) -> None:
-    conn = get_db()
-    conn.execute("UPDATE articles SET included=? WHERE id=?", (1 if included else 0, article_id))
-    conn.commit()
-    conn.close()
-
-
-def update_article_text(article_id: int, headline: str, summary: str,
-                        why: str, challenge: str, category: str) -> None:
-    """Allow coordinator to save manual edits."""
-    conn = get_db()
-    conn.execute(
-        """UPDATE articles
-           SET ai_headline=?, ai_summary=?, why_it_matters=?,
-               quick_challenge=?, category=?
-           WHERE id=?""",
-        (headline, summary, why, challenge, category, article_id)
-    )
-    conn.commit()
-    conn.close()
-
-
-def clear_articles() -> None:
-    conn = get_db()
-    conn.execute("DELETE FROM articles")
-    conn.commit()
-    conn.close()
+def clear_articles(db_path: Optional[str] = None) -> None:
+    with _connect(db_path) as conn:
+        conn.execute("DELETE FROM articles")
 
 
 # ─── Newsletters ──────────────────────────────────────────────────────────────
 
-def save_newsletter(title: str, editor_note: str, html: str,
-                    md: str, fmt: str = "weekly") -> int:
-    conn = get_db()
-    cur = conn.execute(
-        """INSERT INTO newsletters (title, editor_note, html_content, md_content, format)
-           VALUES (?, ?, ?, ?, ?)""",
-        (title, editor_note, html, md, fmt)
-    )
-    nid = cur.lastrowid
-    conn.commit()
-    conn.close()
-    return nid
+def save_newsletter(title: str, editor_note: str, html: str, md: str,
+                    fmt: str = "weekly", db_path: Optional[str] = None) -> int:
+    with _connect(db_path) as conn:
+        cur = conn.execute(
+            """INSERT INTO newsletters (title, editor_note, html_content, md_content, format)
+               VALUES (?, ?, ?, ?, ?)""",
+            (title, editor_note, html, md, fmt),
+        )
+        return cur.lastrowid
 
 
-def get_newsletters(limit: int = 10) -> list[dict]:
-    conn = get_db()
-    rows = conn.execute(
-        "SELECT id, title, format, created_at FROM newsletters ORDER BY created_at DESC LIMIT ?",
-        (limit,)
-    ).fetchall()
-    conn.close()
+def get_newsletters(limit: int = 10, db_path: Optional[str] = None) -> list[dict]:
+    with _connect(db_path) as conn:
+        rows = conn.execute(
+            "SELECT id, title, format, created_at FROM newsletters ORDER BY id DESC LIMIT ?",
+            (limit,),
+        ).fetchall()
     return [dict(r) for r in rows]
 
 
-def get_newsletter_html(newsletter_id: int) -> str:
-    conn = get_db()
-    row = conn.execute(
-        "SELECT html_content FROM newsletters WHERE id=?", (newsletter_id,)
-    ).fetchone()
-    conn.close()
-    return row["html_content"] if row else ""
+def get_newsletter(newsletter_id: int, db_path: Optional[str] = None) -> Optional[dict]:
+    with _connect(db_path) as conn:
+        row = conn.execute("SELECT * FROM newsletters WHERE id=?", (newsletter_id,)).fetchone()
+    return dict(row) if row else None

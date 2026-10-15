@@ -3,264 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="AI Pulse – Your weekly AI news digest for CS students">
-  <title>{{ title }} – {{ date_str }}</title>
+  <title>{{ title }} · {{ edition_label }} · {{ period }}</title>
   <style>
     @media screen and (max-width: 480px) {
-      .container  { width: 100% !important; }
-      .article-td { padding: 16px !important; }
-      .header-td  { padding: 24px 20px !important; }
+      .container { width: 100% !important; }
+      .pad { padding-left: 16px !important; padding-right: 16px !important; }
     }
+    a { color: inherit; }
   </style>
 </head>
-<body style="margin:0;padding:0;background-color:#0f0f1a;font-family:'Segoe UI',Arial,Helvetica,sans-serif;">
+<body style="margin:0;padding:0;background:#eef0f5;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:#1f2233;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#eef0f5;">
+<tr><td align="center" style="padding:16px 8px;">
 
-  <!-- Outer wrapper -->
-  <table width="100%" cellpadding="0" cellspacing="0" border="0"
-         style="background-color:#0f0f1a;">
-    <tr>
-      <td align="center" style="padding:32px 10px 48px;">
+<table class="container" width="600" cellpadding="0" cellspacing="0" border="0"
+       style="max-width:600px;background:#ffffff;border-radius:10px;overflow:hidden;">
 
-        <!-- ═══ CONTAINER ═══════════════════════════════════════════════════ -->
-        <table class="container" width="620" cellpadding="0" cellspacing="0" border="0"
-               style="max-width:620px;background-color:#16162a;border-radius:16px;
-                      overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,0.6);">
+  <!-- Header -->
+  <tr>
+    <td class="pad" style="background:#16162a;padding:14px 24px;border-bottom:3px solid #e94560;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="font-size:18px;font-weight:800;color:#ffffff;">🤖 {{ title }}</td>
+          <td align="right" style="font-size:12px;color:#a0a0c0;">
+            {{ edition_label }} · {{ period }}<br>
+            {{ story_count }} stories · {{ total_minutes }} min
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 
-          <!-- ── HEADER ──────────────────────────────────────────────────── -->
-          <tr>
-            <td class="header-td" style="background:linear-gradient(135deg,#1a1a3e 0%,#0d0d2b 100%);
-                padding:44px 48px 36px;text-align:center;
-                border-bottom:2px solid #e94560;">
-              <!-- Logo row -->
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center">
-                    <div style="display:inline-block;background:rgba(233,69,96,0.15);
-                                border:1px solid rgba(233,69,96,0.4);border-radius:12px;
-                                padding:8px 20px;margin-bottom:20px;">
-                      <span style="font-size:13px;font-weight:700;color:#e94560;
-                                   letter-spacing:3px;text-transform:uppercase;">
-                        🤖 AI Pulse
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td align="center">
-                    <h1 style="margin:0 0 10px;color:#ffffff;font-size:30px;
-                               font-weight:800;letter-spacing:-0.5px;line-height:1.2;">
-                      {{ title }}
-                    </h1>
-                  </td>
-                </tr>
-                <tr>
-                  <td align="center">
-                    <p style="margin:0;color:#8888aa;font-size:14px;">
-                      {{ date_str }} &nbsp;·&nbsp;
-                      {% if fmt == 'weekly' %}Week #{{ week_num }} Edition{% else %}Monthly Edition{% endif %}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+  {% if editor_note %}
+  <tr>
+    <td class="pad" style="padding:12px 24px 0;font-size:13px;line-height:1.5;color:#555a70;font-style:italic;">
+      {{ editor_note }}
+    </td>
+  </tr>
+  {% endif %}
 
-          <!-- ── EDITOR'S NOTE ───────────────────────────────────────────── -->
-          <tr>
-            <td style="padding:28px 48px 20px;background-color:#1c1c35;
-                       border-bottom:1px solid rgba(255,255,255,0.06);">
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="border-left:3px solid #e94560;padding-left:16px;">
-                    <p style="margin:0 0 4px;font-size:11px;font-weight:700;
-                               color:#e94560;letter-spacing:2px;text-transform:uppercase;">
-                      Editor's Note
-                    </p>
-                    <p style="margin:0;font-size:15px;color:#b0b0cc;line-height:1.65;">
-                      {{ editor_note }}
-                    </p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+  {% for group in groups %}
+  <!-- Group: {{ group.label }} -->
+  <tr>
+    <td class="pad" style="padding:16px 24px 4px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#8a8fa8;">
+      {{ group.label }}
+    </td>
+  </tr>
+  {% for a in group.articles %}
+  <tr>
+    <td class="pad" style="padding:6px 24px 10px;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="border-left:3px solid {{ a.category_color }};padding:2px 0 2px 12px;">
+            <a href="{{ a.link }}" style="font-size:15px;font-weight:700;line-height:1.35;color:#16162a;text-decoration:none;">
+              {{ a.ai_headline or a.title }}
+            </a>
+            <div style="font-size:11px;color:#8a8fa8;margin:2px 0 4px;">
+              {% if fmt == 'monthly' %}{{ a.category_emoji }} {{ a.category }} · {% endif %}{{ a.source }} · {{ a.reading_time }} min read
+            </div>
+            <div style="font-size:13px;line-height:1.5;color:#3a3f55;">{{ a.ai_summary }}</div>
+            <div style="font-size:12px;line-height:1.5;color:#3a3f55;margin-top:4px;">
+              <span style="color:#e94560;font-weight:700;">💡 Why:</span> {{ a.why_it_matters }}
+            </div>
+            {% if a.quick_challenge %}
+            <div style="font-size:12px;line-height:1.5;color:#3a3f55;">
+              <span style="color:#00a383;font-weight:700;">⚡ Try:</span> {{ a.quick_challenge }}
+            </div>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+  {% endfor %}
+  {% endfor %}
 
-          <!-- ── STATS BAR ───────────────────────────────────────────────── -->
-          <tr>
-            <td style="padding:16px 48px;background-color:#141428;">
-              <table width="100%" cellpadding="0" cellspacing="0">
-                <tr>
-                  <td align="center" style="padding:0 8px;border-right:1px solid rgba(255,255,255,0.08);">
-                    <p style="margin:0;font-size:22px;font-weight:800;color:#e94560;">{{ articles|length }}</p>
-                    <p style="margin:4px 0 0;font-size:11px;color:#6666aa;text-transform:uppercase;letter-spacing:1px;">Stories</p>
-                  </td>
-                  <td align="center" style="padding:0 8px;border-right:1px solid rgba(255,255,255,0.08);">
-                    <p style="margin:0;font-size:22px;font-weight:800;color:#6c63ff;">
-                      {{ articles | sum(attribute='reading_time') }} min
-                    </p>
-                    <p style="margin:4px 0 0;font-size:11px;color:#6666aa;text-transform:uppercase;letter-spacing:1px;">Total Read</p>
-                  </td>
-                  <td align="center" style="padding:0 8px;">
-                    <p style="margin:0;font-size:22px;font-weight:800;color:#00b894;">
-                      {% if fmt == 'weekly' %}Weekly{% else %}Monthly{% endif %}
-                    </p>
-                    <p style="margin:4px 0 0;font-size:11px;color:#6666aa;text-transform:uppercase;letter-spacing:1px;">Edition</p>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
+  <!-- Footer -->
+  <tr>
+    <td class="pad" style="padding:12px 24px;margin-top:8px;border-top:1px solid #e6e8ef;font-size:11px;color:#8a8fa8;text-align:center;">
+      AI Pulse · curated by your club, summarized with AI · © {{ year }} · All stories link to their original sources
+    </td>
+  </tr>
 
-          <!-- ── SECTION HEADER ──────────────────────────────────────────── -->
-          <tr>
-            <td style="padding:32px 48px 12px;">
-              <h2 style="margin:0;font-size:13px;font-weight:700;color:#6666aa;
-                         letter-spacing:3px;text-transform:uppercase;">
-                🔥 &nbsp; Top Stories This Edition
-              </h2>
-            </td>
-          </tr>
-
-          <!-- ── ARTICLE CARDS ───────────────────────────────────────────── -->
-          {% for article in articles %}
-          <tr>
-            <td style="padding:0 28px 20px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0"
-                     style="background-color:#1e1e38;border-radius:12px;
-                            border:1px solid rgba(255,255,255,0.07);
-                            overflow:hidden;">
-                <!-- Colour accent bar -->
-                <tr>
-                  <td style="height:4px;background-color:{{ article.category_color }};"></td>
-                </tr>
-                <!-- Card content -->
-                <tr>
-                  <td class="article-td" style="padding:24px 28px;">
-
-                    <!-- Category + reading time -->
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td>
-                          <span style="display:inline-block;background:rgba(108,99,255,0.15);
-                                       border:1px solid rgba(108,99,255,0.3);border-radius:20px;
-                                       padding:3px 12px;font-size:11px;font-weight:700;
-                                       color:{{ article.category_color }};letter-spacing:1px;">
-                            {{ article.get('category', '📰 General') }}
-                          </span>
-                        </td>
-                        <td align="right">
-                          <span style="font-size:12px;color:#5555aa;">
-                            ⏱ {{ article.get('reading_time', '?') }} min read
-                          </span>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Headline -->
-                    <h3 style="margin:14px 0 10px;font-size:19px;font-weight:700;
-                               line-height:1.35;color:#ffffff;">
-                      <a href="{{ article.get('link', '#') }}"
-                         style="text-decoration:none;color:#ffffff;">
-                        {{ article.get('ai_headline', article.get('title', 'Untitled')) }}
-                      </a>
-                    </h3>
-
-                    <!-- AI Summary -->
-                    <p style="margin:0 0 16px;font-size:14px;color:#9999bb;line-height:1.7;">
-                      {{ article.get('ai_summary', article.get('summary', '')) }}
-                    </p>
-
-                    <!-- Why It Matters -->
-                    <table width="100%" cellpadding="0" cellspacing="0">
-                      <tr>
-                        <td style="background:rgba(233,69,96,0.08);border-radius:8px;
-                                   border-left:3px solid #e94560;padding:12px 16px;
-                                   margin-bottom:16px;">
-                          <p style="margin:0 0 4px;font-size:11px;font-weight:700;
-                                     color:#e94560;text-transform:uppercase;letter-spacing:1px;">
-                            💡 Why It Matters
-                          </p>
-                          <p style="margin:0;font-size:13px;color:#b0b0cc;line-height:1.6;">
-                            {{ article.get('why_it_matters', '') }}
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-
-                    <!-- Quick Challenge -->
-                    {% if article.get('quick_challenge') %}
-                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
-                      <tr>
-                        <td style="background:rgba(0,184,148,0.08);border-radius:8px;
-                                   border-left:3px solid #00b894;padding:12px 16px;">
-                          <p style="margin:0 0 4px;font-size:11px;font-weight:700;
-                                     color:#00b894;text-transform:uppercase;letter-spacing:1px;">
-                            ⚡ Quick Challenge
-                          </p>
-                          <p style="margin:0;font-size:13px;color:#b0b0cc;line-height:1.6;">
-                            {{ article.get('quick_challenge', '') }}
-                          </p>
-                        </td>
-                      </tr>
-                    </table>
-                    {% endif %}
-
-                    <!-- Source + CTA row -->
-                    <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:20px;">
-                      <tr>
-                        <td style="font-size:12px;color:#4444aa;">
-                          Source: <strong style="color:#6666cc;">{{ article.get('source', 'Unknown') }}</strong>
-                        </td>
-                        <td align="right">
-                          <a href="{{ article.get('link', '#') }}"
-                             style="display:inline-block;background-color:#e94560;
-                                    color:#ffffff;font-size:13px;font-weight:700;
-                                    padding:9px 20px;text-decoration:none;
-                                    border-radius:6px;letter-spacing:0.5px;">
-                            Read More →
-                          </a>
-                        </td>
-                      </tr>
-                    </table>
-
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          {% endfor %}
-
-          <!-- ── DIVIDER ──────────────────────────────────────────────────── -->
-          <tr>
-            <td style="padding:8px 48px 32px;">
-              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06);margin:0;">
-            </td>
-          </tr>
-
-          <!-- ── FOOTER ──────────────────────────────────────────────────── -->
-          <tr>
-            <td style="padding:32px 48px 40px;
-                       background:linear-gradient(135deg,#0d0d2b 0%,#1a1a3e 100%);
-                       border-top:1px solid rgba(233,69,96,0.3);text-align:center;">
-              <p style="margin:0 0 10px;font-size:22px;">🤖</p>
-              <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#ffffff;">
-                AI Pulse Newsletter
-              </p>
-              <p style="margin:0 0 16px;font-size:12px;color:#5555aa;">
-                Powered by Gemini AI &nbsp;·&nbsp; Built for CS Students at VESIT
-              </p>
-              <p style="margin:0;font-size:12px;color:#444466;">
-                © {{ year }} AI Pulse &nbsp;·&nbsp; All articles attributed to original sources
-              </p>
-            </td>
-          </tr>
-
-        </table>
-        <!-- ═══ END CONTAINER ════════════════════════════════════════════════ -->
-
-      </td>
-    </tr>
-  </table>
-
+</table>
+</td></tr>
+</table>
 </body>
 </html>
