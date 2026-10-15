@@ -1,0 +1,184 @@
+[
+  {
+    "title": "GPT-4o Gets Real-Time Voice and Vision Capabilities",
+    "link": "https://openai.com/blog/gpt-4o-system-card",
+    "summary": "OpenAI released GPT-4o, a new flagship model that can accept and generate text, audio, and images in real time. The model achieves human-level response times in conversations and can detect emotions from voice. Developers can now access these multimodal capabilities through the API.",
+    "published": "Mon, 13 Oct 2025 10:00:00 +0000",
+    "source": "OpenAI"
+  },
+  {
+    "title": "Meta Releases Llama 3.2 with Vision and Lightweight Mobile Models",
+    "link": "https://huggingface.co/meta-llama",
+    "summary": "Meta released Llama 3.2, featuring vision-capable models (11B and 90B parameters) and lightweight text models (1B and 3B) optimized for mobile and edge devices. The models are open-source and available on Hugging Face. The small models are designed to run directly on smartphones.",
+    "published": "Tue, 07 Oct 2025 09:00:00 +0000",
+    "source": "HuggingFace"
+  },
+  {
+    "title": "GitHub Copilot Now Understands Your Entire Codebase with Workspace Feature",
+    "link": "https://github.blog/2025-10-01-github-copilot-workspace/",
+    "summary": "GitHub Copilot Workspace is now generally available, allowing developers to describe a task in natural language and have Copilot plan, code, test, and iterate across an entire repository. The feature creates a full development environment in the browser that Copilot can modify autonomously.",
+    "published": "Wed, 01 Oct 2025 12:00:00 +0000",
+    "source": "GitHub"
+  },
+  {
+    "title": "Google DeepMind AlphaProof Solves International Math Olympiad Problems",
+    "link": "https://deepmind.google/blog/alphaproof",
+    "summary": "Google DeepMind's AlphaProof system successfully solved four out of six problems from the 2025 International Mathematical Olympiad, achieving a silver medal level. The system combines a language model with formal proof verification. This represents a major step in AI mathematical reasoning.",
+    "published": "Fri, 19 Sep 2025 11:00:00 +0000",
+    "source": "DeepMind"
+  },
+  {
+    "title": "Anthropic Releases Claude 3.7 Sonnet with Extended Thinking Mode",
+    "link": "https://www.anthropic.com/news/claude-3-7-sonnet",
+    "summary": "Anthropic's Claude 3.7 Sonnet introduces extended thinking mode, where the model can spend more time reasoning before responding to difficult problems. The model shows strong improvements on coding benchmarks including SWE-bench. Extended thinking can be toggled on/off via API.",
+    "published": "Mon, 06 Oct 2025 14:00:00 +0000",
+    "source": "TechCrunch AI"
+  },
+  {
+    "title": "Stanford HAI Report: 73% of Companies Now Using AI in Software Development",
+    "link": "https://hai.stanford.edu/ai-index-report-2025",
+    "summary": "Stanford's AI Index Report 2025 reveals that 73% of companies surveyed are using AI tools in their software development workflows. The most common tools are code completion (Copilot-style) and automated testing. The report also shows AI engineers now command 15-25% salary premiums.",
+    "published": "Thu, 02 Oct 2025 08:00:00 +0000",
+    "source": "MIT Tech Review"
+  },
+  {
+    "title": "Mistral AI Open-Sources Mixtral 8x22B Instruction Model",
+    "link": "https://mistral.ai/news/mixtral-8x22b/",
+    "summary": "Mistral AI has released Mixtral 8x22B, a sparse mixture-of-experts model with 141B total parameters but only 39B active per token. It outperforms GPT-3.5 and Claude Instant on most benchmarks and is released under Apache 2.0 license. The model is freely available for commercial use.",
+    "published": "Wed, 10 Sep 2025 10:00:00 +0000",
+    "source": "VentureBeat AI"
+  },
+  {
+    "title": "New Research Shows LLMs Can Learn From Mistakes Using Self-Reflection",
+    "link": "https://arxiv.org/abs/2310.01848",
+    "summary": "MIT researchers published a paper on Reflexion, a framework that allows LLMs to improve by reflecting on their past failures using verbal reinforcement. The approach achieves state-of-the-art on coding and reasoning tasks without any gradient updates. The code is open source on GitHub.",
+    "published": "Mon, 29 Sep 2025 15:00:00 +0000",
+    "source": "arXiv AI"
+  },
+  {
+    "title": "Microsoft Launches Free AI Skills Certification Program for Students",
+    "link": "https://microsoft.com/ai-skills-2025",
+    "summary": "Microsoft announced a global AI skills initiative offering free certifications in Azure AI, Copilot development, and prompt engineering for students and recent graduates. Over 10 million free learning paths are being made available globally. Certifications are valid for 2 years.",
+    "published": "Tue, 08 Oct 2025 09:30:00 +0000",
+    "source": "The Verge AI"
+  },
+  {
+    "title": "Hugging Face Releases Open LeaderBoard for Real-World Coding Tasks",
+    "link": "https://huggingface.co/blog/leaderboard-coding-2025",
+    "summary": "Hugging Face launched the Open Code Leaderboard, a new benchmark that evaluates LLMs on real-world software engineering tasks from GitHub issues rather than synthetic problems. The leaderboard tests models on bug fixes, feature implementations, and code reviews.",
+    "published": "Fri, 04 Oct 2025 13:00:00 +0000",
+    "source": "HuggingFace"
+  },
+  {
+    "title": "Runway Gen-3 Alpha Introduces Text-to-Video at Cinematic Quality",
+    "link": "https://runwayml.com/gen3",
+    "summary": "Runway released Gen-3 Alpha, a video generation model producing 10-second cinematic-quality clips from text prompts. The model supports camera motion controls and maintains character consistency across frames. Access is available through a monthly subscription.",
+    "published": "Wed, 17 Sep 2025 11:00:00 +0000",
+    "source": "Wired AI"
+  },
+  {
+    "title": "EU AI Act Enforcement Timeline: What Developers Need to Know Now",
+    "link": "https://www.wired.com/story/eu-ai-act-developers-guide/",
+    "summary": "The EU AI Act is now in force with a phased rollout. High-risk AI systems in education, employment, and critical infrastructure face strictest rules starting February 2026. Developers must implement transparency requirements, human oversight mechanisms, and maintain audit trails.",
+    "published": "Mon, 06 Oct 2025 10:00:00 +0000",
+    "source": "Wired AI"
+  },
+  {
+    "title": "Nvidia Releases Open-Source NeMo Framework for Custom LLM Training",
+    "link": "https://github.com/NVIDIA/NeMo",
+    "summary": "Nvidia open-sourced NeMo 2.0, a framework for training and fine-tuning large language models on custom datasets. The framework supports distributed training across hundreds of GPUs and includes tools for data preprocessing, fine-tuning with LoRA, and model evaluation.",
+    "published": "Thu, 25 Sep 2025 14:00:00 +0000",
+    "source": "VentureBeat AI"
+  },
+  {
+    "title": "LangChain Introduces LangGraph for Building Stateful AI Agents",
+    "link": "https://blog.langchain.dev/langgraph",
+    "summary": "LangChain released LangGraph, a library for building stateful, multi-actor AI applications using graph-based workflows. It enables agents to have persistent memory, pause and resume execution, and collaborate with other agents. The library integrates seamlessly with LangChain tools.",
+    "published": "Tue, 30 Sep 2025 12:00:00 +0000",
+    "source": "TechCrunch AI"
+  },
+  {
+    "title": "AI Models Trained on Synthetic Data Outperform Humans in Code Review",
+    "link": "https://www.technologyreview.com/2025/10/code-review-ai",
+    "summary": "A new study from CMU found that AI models trained on synthetic code review data outperform junior developers in identifying security vulnerabilities and suggesting improvements. The study used 10,000 synthetic code review examples generated by GPT-4 and refined by human experts.",
+    "published": "Fri, 11 Oct 2025 09:00:00 +0000",
+    "source": "MIT Tech Review"
+  },
+  {
+    "title": "New AI Coffee Machine Learns Your Preferences After 7 Days",
+    "link": "https://techcrunch.com/gadgets/smartcoffee-ai-2025",
+    "summary": "A startup has released an AI-powered coffee machine that learns a user's coffee preferences over one week. The device adjusts strength, temperature, and timing based on behavior patterns. It retails at $399 and connects to a smartphone app.",
+    "published": "Mon, 14 Oct 2025 08:00:00 +0000",
+    "source": "TechCrunch AI"
+  },
+  {
+    "title": "Celebrity Chef Uses AI to Generate Michelin Star Recipes",
+    "link": "https://www.theverge.com/ai-chef-recipes-2025",
+    "summary": "A Michelin-starred chef revealed they used Claude AI to help brainstorm new dish combinations. The AI suggested 300 novel ingredient pairings, with 12 making it onto the tasting menu. The chef says AI is now an essential creative collaborator in their kitchen.",
+    "published": "Wed, 08 Oct 2025 15:00:00 +0000",
+    "source": "The Verge AI"
+  },
+  {
+    "title": "Gemini 2.5 Pro Now Available with 2M Token Context Window",
+    "link": "https://deepmind.google/blog/gemini-25-pro",
+    "summary": "Google DeepMind released Gemini 2.5 Pro with a 2 million token context window, enabling the model to process entire codebases, books, or hours of video in a single prompt. The model achieves top-of-leaderboard scores on MMLU, GPQA, and LiveCodeBench benchmarks.",
+    "published": "Tue, 15 Oct 2025 10:00:00 +0000",
+    "source": "DeepMind"
+  },
+  {
+    "title": "OpenAI o3 Model Achieves PhD-Level Scores on Science Benchmarks",
+    "link": "https://openai.com/blog/o3-announcement",
+    "summary": "OpenAI's o3 reasoning model scores at PhD-level proficiency on chemistry, biology, and physics benchmarks. It solves 87.7% of problems on ARC-AGI, which tests general fluid intelligence. The model uses chain-of-thought reasoning that can run for minutes on hard problems.",
+    "published": "Mon, 21 Oct 2025 11:00:00 +0000",
+    "source": "OpenAI"
+  },
+  {
+    "title": "Fast Food Chain Adopts AI Drive-Through Ordering at 1000 Locations",
+    "link": "https://www.theverge.com/ai-fast-food-ordering",
+    "summary": "A major fast food chain announced the rollout of AI-powered voice ordering at drive-throughs in 1000 US locations. The system understands natural speech and can handle order modifications. Early tests show 20% faster order completion times.",
+    "published": "Thu, 10 Oct 2025 12:00:00 +0000",
+    "source": "The Verge AI"
+  },
+  {
+    "title": "Andrej Karpathy's Free 'Neural Networks: Zero to Hero' Course Gets 2025 Update",
+    "link": "https://karpathy.ai/zero-to-hero",
+    "summary": "AI educator and former Tesla/OpenAI researcher Andrej Karpathy updated his popular YouTube course 'Neural Networks: Zero to Hero' with 6 new modules covering transformers, GPT from scratch, and modern training techniques. All videos are free and include code notebooks.",
+    "published": "Sat, 04 Oct 2025 08:00:00 +0000",
+    "source": "MIT Tech Review"
+  },
+  {
+    "title": "Cursor IDE Raises $100M, Claims to Be Fastest Growing Developer Tool",
+    "link": "https://techcrunch.com/cursor-raises-series-b",
+    "summary": "Cursor, the AI-first code editor built on VS Code, announced a $100M Series B at a $2.5B valuation. The company reports 100,000 paying teams using the editor. Cursor's unique feature is a chat interface that can edit code across multiple files simultaneously.",
+    "published": "Wed, 09 Oct 2025 10:00:00 +0000",
+    "source": "TechCrunch AI"
+  },
+  {
+    "title": "RAG vs Fine-Tuning: New Benchmark Shows When Each Technique Wins",
+    "link": "https://arxiv.org/abs/2309.11495",
+    "summary": "Researchers from UC Berkeley published a comprehensive benchmark comparing RAG (Retrieval Augmented Generation) vs fine-tuning on domain-specific tasks. RAG wins for factual, frequently changing information. Fine-tuning wins for style, format, and stable domain knowledge.",
+    "published": "Mon, 29 Sep 2025 10:00:00 +0000",
+    "source": "arXiv AI"
+  },
+  {
+    "title": "Stability AI Releases Stable Diffusion 3.5 Under Open License",
+    "link": "https://stability.ai/stable-diffusion-3-5",
+    "summary": "Stability AI released Stable Diffusion 3.5, their most capable image generation model, under an open license allowing commercial use. The model excels at photorealism, text rendering, and following complex prompts. Fine-tuned versions can be created with as few as 10 images.",
+    "published": "Thu, 24 Oct 2025 09:00:00 +0000",
+    "source": "Wired AI"
+  },
+  {
+    "title": "Berkeley BAIR: New RLHF Method Reduces AI Hallucinations by 60%",
+    "link": "https://bair.berkeley.edu/blog/2025/rlhf-hallucination",
+    "summary": "Berkeley AI Research Lab published a new RLHF (Reinforcement Learning from Human Feedback) variant that reduces hallucination rates in LLMs by 60% on factual QA benchmarks. The technique, called Calibrated RLHF, trains models to output calibrated confidence alongside answers.",
+    "published": "Tue, 08 Oct 2025 11:30:00 +0000",
+    "source": "arXiv AI"
+  },
+  {
+    "title": "Replit Announces 'Ghostwriter Pro' – AI That Deploys Your App Automatically",
+    "link": "https://blog.replit.com/ghostwriter-pro-2025",
+    "summary": "Replit launched Ghostwriter Pro, an AI coding assistant that can not only write code but also run tests, debug failures, and deploy the app to production—all from a single chat interface. The system uses an agent loop that persists until the app is functional.",
+    "published": "Fri, 03 Oct 2025 14:00:00 +0000",
+    "source": "VentureBeat AI"
+  }
+]
