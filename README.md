@@ -76,6 +76,23 @@ python publisher.py --test     # renders weekly + monthly demo editions into out
 pytest                         # unit tests + a scripted run of the whole dashboard
 ```
 
+## Troubleshooting on Windows
+
+**`ImportError: DLL load failed ... An Application Control policy has blocked this file`**
+means Windows (usually *Smart App Control*, under Windows Security → App & browser control) is
+refusing to load a compiled library. The dashboard no longer needs `pandas` or `pyarrow`, so pull
+the latest code and reinstall. If another package is blocked, create a clean virtual environment
+on Python 3.12, which has the most widely signed wheels:
+
+```powershell
+py -3.12 -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+Running from a folder outside OneDrive can also help, since synced folders are scanned more strictly.
+
 ## Deploying to Streamlit Cloud
 
 Push the repo, create an app pointing at `app.py`, and (optionally) add `GEMINI_API_KEY` under

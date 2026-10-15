@@ -29,3 +29,11 @@ def test_demo_flow_end_to_end():
 
     at.sidebar.radio[0].set_value("👁️ Preview").run()
     assert not at.exception
+
+
+def test_app_never_loads_pyarrow_or_pandas():
+    """Some Windows PCs block pyarrow's DLL, so the dashboard must not need it."""
+    import sys
+    test_demo_flow_end_to_end()
+    assert "pyarrow" not in sys.modules
+    assert "pandas" not in sys.modules

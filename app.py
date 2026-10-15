@@ -4,8 +4,9 @@ app.py — AI Pulse coordinator dashboard (Streamlit)
 Run:  streamlit run app.py
 """
 import hashlib
+import html
+from collections import Counter
 
-import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
@@ -59,6 +60,30 @@ def _score_badge(score) -> str:
     score = int(score or 0)
     color = "green" if score >= 8 else "orange" if score >= config.RELEVANCE_THRESHOLD else "red"
     return f":{color}-background[**{score}/10**]"
+
+
+def _score_table(articles: list[dict]) -> str:
+    """Score table as plain HTML (st.dataframe needs pyarrow, which some locked-down PCs block)."""
+    rows = []
+    for a in articles:
+        score = int(a.get("relevance_score") or 0)
+        color = "#2e9e5b" if score >= 8 else "#e69b00" if score >= config.RELEVANCE_THRESHOLD else "#d64545"
+        rows.append(
+            "<tr>"
+            f"<td style='white-space:nowrap'><span style='display:inline-block;width:60px;height:8px;"
+            f"background:#e6e8ef;border-radius:4px;vertical-align:middle'><span style='display:block;"
+            f"width:{score * 10}%;height:8px;background:{color};border-radius:4px'></span></span> {score}/10</td>"
+            f"<td style='white-space:nowrap'>{STATUS_ICON.get(a['status'], '')} {a['status']}</td>"
+            f"<td>{html.escape(a['title'])}</td>"
+            f"<td>{html.escape(a.get('source') or '')}</td>"
+            f"<td><small>{html.escape(a.get('relevance_reason') or '')}</small></td>"
+            "</tr>"
+        )
+    return (
+        "<div style='max-height:420px;overflow-y:auto'><table style='width:100%;font-size:14px'>"
+        "<thead><tr><th>Score</th><th>Status</th><th>Title</th><th>Source</th><th>AI reasoning</th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody></table></div>"
+    )
 
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
@@ -116,26 +141,14 @@ if page == PAGES[0]:
     if not articles:
         st.info("No articles yet. Click the button above to start.")
     else:
-        counts = pd.Series([a["status"] for a in articles]).value_counts()
+        counts = Counter(a["status"] for a in articles)
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Fetched", len(articles))
-        c2.metric("Passed AI filter", int(sum(counts.get(s, 0) for s in ("pending", "approved", "rejected"))))
-        c3.metric("Filtered out", int(counts.get("filtered", 0)))
-        c4.metric("Duplicates", int(counts.get("duplicate", 0)))
-
-        df = pd.DataFrame([{
-            "Score": a.get("relevance_score") or 0,
-            "Status": f"{STATUS_ICON.get(a['status'], '')} {a['status']}",
-            "Title": a["title"],
-            "Source": a["source"],
-            "AI reasoning": a.get("relevance_reason") or "",
-        } for a in articles])
-        st.dataframe(
-            df, hide_index=True, width="stretch",
-            column_config={"Score": st.column_config.ProgressColumn(
-                "Score", min_value=0, max_value=10, format="%d/10")},
-        )
-        if counts.get("pending", 0):
+        c2.metric("Passed AI filter", sum(counts[s] for s in ("pending", "approved", "rejected")))
+        c3.metric("Filtered out", counts["filtered"])
+        c4.metric("Duplicates", counts["duplicate"])
+        st.markdown(_score_table(articles), unsafe_allow_html=True)
+        if counts["pending"]:
             st.success(f"{counts['pending']} articles are waiting for review.")
             st.button("Go to Review & Edit →", on_click=_goto, args=(PAGES[1],))
 
